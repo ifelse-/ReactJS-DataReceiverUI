@@ -13,25 +13,37 @@
 <div id="content"></div>
 
 <script type="text/babel">
+var DropDown = React.createClass({
+    render: function() {
+	  return ( 
+		<option value={this.props.gotauthor}>{this.props.gottext}</option>
+	   ); 
+	}
+});
+
 var UIContainer = React.createClass({
    render: function() {
 	  return (
-	    <div>{this.props.getar}</div>
+	    <DropDown gotauthor={this.props.getauthor} gottext={this.props.gettext}/>
 		);
 	  }
 });
 var DataEngine = React.createClass({
+  watchListener: function() {
+	  //console.log('working');
+	    var element = document.getElementById('listener');
+		element.innerHTML = "KGJGGKGKJ"
+	    
+	  
+	  }, 	
   render: function() {
 	  var dataNodes = this.props.data.map(function (items) {
       return (
-        <div key={items.author}>
-		  <UIContainer getar={items.author} />
-          {items.text}
-        </div>
+		 <UIContainer key={items.author} getauthor={items.author} gettext={items.text} />
       );
 	 }); 
     return (
-     <div>
+     <div id="listener">
         {dataNodes}
       </div>
     );
@@ -56,11 +68,12 @@ var Receiver = React.createClass({
   },
   componentDidMount: function() {
     this.loadDataFromServer();
+	this.refs.me.watchListener();   
     setInterval(this.loadDataFromServer, this.props.dataInterval);
   },
   render: function() {
-    return (<div>
-      <DataEngine data={this.state.data}/>
+   return (<div>
+      <DataEngine data={this.state.data} ref="me"/>
 	  </div>
     );
   }
