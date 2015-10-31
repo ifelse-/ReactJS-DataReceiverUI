@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Data Receiver UI</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="build/react.js"></script>
+<script src="build/react-dom.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+</head>
+<body>
+
+<div id="content"></div>
+
+<script type="text/babel">
+var UIContainer = React.createClass({
+   render: function() {
+	  return (
+	    <div>{this.props.getar}</div>
+		);
+	  }
+});
+var DataEngine = React.createClass({
+  render: function() {
+	  var dataNodes = this.props.data.map(function (items) {
+      return (
+        <div key={items.author}>
+		  <UIContainer getar={items.author} />
+          {items.text}
+        </div>
+      );
+	 }); 
+    return (
+     <div>
+        {dataNodes}
+      </div>
+    );
+  }
+});
+var Receiver = React.createClass({
+  loadDataFromServer: function() {
+    $.ajax({
+      url: this.props.url,
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({data: data});
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(this.props.url, status, err.toString());
+      }.bind(this)
+    });
+  },	
+  getInitialState: function() {
+    return {data: []};
+  },
+  componentDidMount: function() {
+    this.loadDataFromServer();
+    setInterval(this.loadDataFromServer, this.props.dataInterval);
+  },
+  render: function() {
+    return (<div>
+      <DataEngine data={this.state.data}/>
+	  </div>
+    );
+  }
+});
+ReactDOM.render(
+  <Receiver url="api/itemsdata.json" dataInterval={2000}/>,
+  document.getElementById('content')
+);
+</script>
+</body>
+</html>
