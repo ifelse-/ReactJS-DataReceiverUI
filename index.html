@@ -7,81 +7,11 @@
 <script src="build/react.js"></script>
 <script src="build/react-dom.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+<script src="scripts/dataReceiverUI.js" type="text/babel"></script>
 </head>
 <body>
 
 <div id="content"></div>
 
-<script type="text/babel">
-var DropDown = React.createClass({
-    render: function() {
-	  return ( 
-		<option value={this.props.gotauthor}>{this.props.gottext}</option>
-	   ); 
-	}
-});
-
-var UIContainer = React.createClass({
-   render: function() {
-	  return (
-	    <DropDown gotauthor={this.props.getauthor} gottext={this.props.gettext}/>
-		);
-	  }
-});
-var DataEngine = React.createClass({
-  watchListener: function() {
-	  //console.log('working');
-	    var element = document.getElementById('listener');
-		element.innerHTML = "KGJGGKGKJ"
-	    
-	  
-	  }, 	
-  render: function() {
-	  var dataNodes = this.props.data.map(function (items) {
-      return (
-		 <UIContainer key={items.author} getauthor={items.author} gettext={items.text} />
-      );
-	 }); 
-    return (
-     <div id="listener">
-        {dataNodes}
-      </div>
-    );
-  }
-});
-var Receiver = React.createClass({
-  loadDataFromServer: function() {
-    $.ajax({
-      url: this.props.url,
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        this.setState({data: data});
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(this.props.url, status, err.toString());
-      }.bind(this)
-    });
-  },	
-  getInitialState: function() {
-    return {data: []};
-  },
-  componentDidMount: function() {
-    this.loadDataFromServer();
-	this.refs.me.watchListener();   
-    setInterval(this.loadDataFromServer, this.props.dataInterval);
-  },
-  render: function() {
-   return (<div>
-      <DataEngine data={this.state.data} ref="me"/>
-	  </div>
-    );
-  }
-});
-ReactDOM.render(
-  <Receiver url="api/itemsdata.json" dataInterval={2000}/>,
-  document.getElementById('content')
-);
-</script>
 </body>
 </html>
